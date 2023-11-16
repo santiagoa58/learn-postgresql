@@ -12,6 +12,19 @@ This Node application is designed as a simple way for me to learn PostgreSQL. It
 git clone https://github.com/santiagoa58/learn-postgresql.git
 ```
 
+**Add Environment Variables**:
+add a `.env` file to the root directory with the following variables:
+
+```bash
+POSTGRES_PASSWORD=postgres
+POSTGRES_USER=postgres
+POSTGRES_DB=postgres
+POSTGRES_HOST=db
+POSTGRES_POST=5432
+```
+
+these are the default values for the PostgreSQL container, but you can change them if you want.
+
 **Install Dependencies**:
 
 - Inside the Node.js container, run `npm install` to install all necessary dependencies.
