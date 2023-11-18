@@ -1,7 +1,7 @@
 const path = require("path");
 const fs = require("fs").promises;
 const { program } = require("commander");
-const { executeQueriesFromFile } = require("./executeQueries");
+const { executeQueriesFromFile } = require("./utils/executeQueries");
 
 program
   .version("1.0.0")
