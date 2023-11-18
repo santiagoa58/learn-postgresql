@@ -1,40 +1,46 @@
-const db = require("./db");
 const path = require("path");
 const fs = require("fs").promises;
+const { program } = require("commander");
+const { executeQueriesFromFile } = require("./executeQueries");
 
-const getQueriesFromFile = async (filepath) => {
-  const data = await fs.readFile(filepath);
-  const queries = data
-    .toString()
-    .split("\n")
-    .filter((line) => !line.startsWith("--"))
-    .join(" ")
-    .split(";")
-    .map((query) => query.trim())
-    .filter((line) => line.length > 0);
-  return queries;
-};
+program
+  .version("1.0.0")
+  .description("CLI tool to execute PostgreSQL queries from files")
+  .option("-f, --file <file>", "Path to the query file")
+  .option(
+    "-d, --directory <directory>",
+    "Path to the directory containing query files"
+  )
+  .parse(process.argv);
 
-const executeQueries = async (queries) => {
-  try {
-    for (const query of queries) {
-      const res = await db.query(query);
-      res.rows?.length && console.log(res.rows);
+async function run(options) {
+  if (options.file) {
+    const filePath = path.join(__dirname, options.file);
+    try {
+      await executeQueriesFromFile(filePath);
+    } catch (error) {
+      console.error(
+        `Error executing queries from file: ${filePath}`,
+        error.message
+      );
+      process.exit(1);
     }
-  } catch (err) {
-    console.error("ERROR", err.message);
+  } else if (options.directory) {
+    const directoryPath = path.resolve(__dirname, options.directory);
+    try {
+      const filenames = await fs.readdir(directoryPath);
+      for (const filename of filenames) {
+        await executeQueriesFromFile(path.join(directoryPath, filename));
+      }
+    } catch (error) {
+      console.error(`Error reading directory: ${directoryPath}`, error.message);
+      process.exit(1);
+    }
+  } else {
+    console.error("Please provide either a file or a directory.");
+    process.exit(1);
   }
-};
-
-const executeQueriesFromFile = async (filepath) => {
-  const queries = await getQueriesFromFile(filepath);
-  console.log(queries);
-  await executeQueries(queries);
-};
-
-async function run() {
-  await executeQueriesFromFile(path.join(__dirname, "queries/users.sql"));
-  await executeQueriesFromFile(path.join(__dirname, "queries/anime.sql"));
+  process.exit();
 }
 
-run();
+run(program.opts());

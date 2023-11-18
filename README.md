@@ -23,7 +23,7 @@ POSTGRES_HOST=db
 POSTGRES_POST=5432
 ```
 
-these are the default values for the PostgreSQL container, but you can change them if you want.
+these are the default values for the PostgreSQL container.
 
 **Install Dependencies**:
 
@@ -33,10 +33,30 @@ these are the default values for the PostgreSQL container, but you can change th
 
 **Starting the Application**:
 
-- Run `npm start` to start the application.
-- This executes the `index.js` script, which in turn processes SQL queries from `.sql` files in the `src/queries` directory.
+There are three scripts that can be used to start the application:
+
+- `npm start`
+  - This script is used to start the application.
+  - specify the file to execute with the -f flag.
+  ```bash
+  npm start -- -f ./queries/<file_name>.sql
+  ```
+  - specify the directory to execute all files in the directory with the -d flag.
+  ```bash
+    npm start -- -d ./queries
+  ```
+- `npm run exec`
+  - This script is a simpler version of the start script. It will execute the src/index.js file without the -f flag.
+  ```bash
+  npm run exec ./queries/<file_name>.sql
+  ```
+- `npm run exec:all`
+  - This script is used to execute all of the queries in the src/queries directory.
+  ```bash
+  npm run exec:all
+  ```
+  - This is equivalent to running `npm start -- -d ./queries`
 
 **Adding New Queries**:
 
-- You can add new `.sql` files to the `src/queries` directory.
-- To execute these new queries, manually add them to the `run` function in `index.js`.
+You can add new `.sql` files to the `src/queries` directory and execute them using one of the commands above.
